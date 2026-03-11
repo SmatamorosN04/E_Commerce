@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import pool from "@/src/config/db";
+import pool from "../config/db";
 
 export const createSale = async (req: Request, res: Response) => {
     const { costumer_name, items } = req.body;
