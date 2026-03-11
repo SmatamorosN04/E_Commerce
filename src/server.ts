@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import productRoutes from './routes/productRoutes';
 import categoryRoutes from "./routes/categoryRoutes";
 import salesRoutes from "./routes/salesRoutes";
+import reportRoutes from './routes/reportRoutes'
 
 dotenv.config();
 
@@ -15,6 +16,8 @@ app.use(express.json());
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/sales', salesRoutes)
+app.use('/api/reports', reportRoutes)
+
 
 app.get('/health', (req, res) => {
     res.json({ status: 'server online', timestamp: new Date() });
