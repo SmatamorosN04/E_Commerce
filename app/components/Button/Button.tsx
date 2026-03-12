@@ -8,7 +8,7 @@ interface ButtonProps {
 }
 
 export const Button = ({ children, variant = 'primary', className = '', onClick}: ButtonProps) => {
-    const baseStyles = "px-8 py-3 uppercase tracking-[0.2em] text-xs transition-all duration-300 rounded-full flex items-center justify-center gap-2";
+    const baseStyles = "px-8 py-3 cursor-pointer uppercase tracking-[0.2em] text-xs transition-all duration-300 rounded-full flex items-center justify-center gap-2";
 
     const variants = {
         primary: "bg-black text-white hover:bg-gray-800",

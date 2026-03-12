@@ -1,43 +1,130 @@
 'use client'
-import { useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard/ProductCard";
+import { LayoutGrid, List, ChevronDown } from "lucide-react";
+import {Navbar} from "@/app/components/NavBar/NavBar";
+import {Footer} from "@/app/components/Footer/Footer";
+import { useSearchParams } from 'next/navigation';
+
 
 export default function ShopPage() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [filteredProducts, setFilteredProducts] = useState([]);
+    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+    const searchParams = useSearchParams();
+    const searchQuery = searchParams.get('q');
 
     useEffect(() => {
         fetch('http://localhost:3001/api/products')
             .then((res) => res.json())
             .then((data) => {
                 setProducts(data);
-                setLoading(false)
+                setLoading(false);
             })
             .catch((err) => {
                 console.error("Error cargando productos", err);
-                setLoading(false)
+                setLoading(false);
             });
     }, []);
 
-    if (loading) return <div className="p-10 text-center">Cargando Catalogo..</div>;
+    useEffect(() => {
+        if (searchQuery) {
+            const filtered = products.filter((p: any) =>
+                p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                p.sku.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+            setFilteredProducts(filtered);
+        } else {
+            setFilteredProducts(products);
+        }
+    }, [searchQuery, products]);
 
-    return (
-        <main className="min-h-screen bg-gray-50 p-6 md:p-12">
-            <header className="max-w-7xl mx-auto mb-10">
-                <h1 className="text-3xl font-extrabold text-gray-900 ">Catalogo de Productos</h1>
-                <p className="text-gray-600">Explora lo que tenemos disponible para ti</p>
-            </header>
-
-            <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 ">
-                {products.length > 0 ? (
-                    products.map((products: any) =>(
-                        <ProductCard key={products.id} product={products}/>
-                    ))
-                ) : (
-                    <p className="col-span full text-center text-gray-500 py-20">No hay productos registrados aun.</p>
-                )}
-            </div>
-        </main>
+    if (loading) return (
+        <div className="flex items-center justify-center min-h-[60vh] text-xs tracking-widest uppercase text-gray-400 italic">
+            Cargando Catalogo...
+        </div>
     );
 
+    return (
+        <main className="min-h-screen bg-white">
+            <Navbar/>
+            <header className="max-w-7xl mx-auto px-6 pt-12 pb-6">
+                {searchQuery && (
+                    <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-2">
+                        Resultados para: <span className="text-black font-medium">"{searchQuery}"</span>
+                    </p>
+                )}
+                <h1 className="text-sm tracking-[0.4em] uppercase font-light border-b border-gray-100 pb-4">
+                    {searchQuery ? 'Búsqueda de Repuestos' : 'Catálogo Completo'}
+                </h1>
+
+                <div className="flex justify-between items-center border-b border-gray-100 pb-4">
+                    <div className="flex items-center gap-2">
+                        <span className="text-[11px] text-gray-900 uppercase tracking-widest font-medium">
+                            {products.length} Artículos
+                        </span>
+                    </div>
+
+                    <div className="flex items-center gap-5">
+                        <div className="flex items-center bg-gray-50 rounded-full p-1 border border-gray-100">
+                            <button
+                                onClick={() => setViewMode('grid')}
+                                className={`p-1.5 rounded-full transition-all ${viewMode === 'grid' ? 'bg-white shadow-sm text-black' : 'text-gray-300'}`}
+                            >
+                                <LayoutGrid className="w-4 h-4" />
+                            </button>
+                            <button
+                                onClick={() => setViewMode('list')}
+                                className={`p-1.5 rounded-full transition-all ${viewMode === 'list' ? 'bg-white shadow-sm text-black' : 'text-gray-300'}`}
+                            >
+                                <List className="w-4 h-4" />
+                            </button>
+                        </div>
+
+                        <div className="hidden md:flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-full cursor-pointer hover:bg-gray-100 transition-colors">
+                            <span className="text-[10px] uppercase tracking-widest text-gray-600">Recientes</span>
+                            <ChevronDown className="w-3 h-3 text-gray-400" />
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            {/* Contenedor de Productos Dinámico */}
+            <div className="max-w-7xl mx-auto px-6 py-10">
+                <div className={
+                    viewMode === 'grid'
+                        ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-12"
+                        : "flex flex-col gap-10 max-w-2xl mx-auto" // En lista lo centramos un poco más
+                }>
+                    {products.length > 0 ? (
+                        products.map((item: any) => (
+                            <ProductCard
+                                key={item.id}
+                                product={item}
+                                view={viewMode} // Pasamos el modo actual a la card
+                            />
+                        ))
+                    ) : (
+                        <div className="col-span-full text-center py-20">
+                            <p className="text-xs tracking-[0.2em] text-gray-400 uppercase italic">
+                                No hay productos registrados aún.
+                            </p>
+                        </div>
+                    )}
+                </div>
+
+                {/* Paginación estilo referencia (Simulada) */}
+                {products.length > 0 && (
+                    <div className="flex justify-center items-center gap-4 mt-20 mb-10">
+                        <button className="w-8 h-8 flex items-center justify-center bg-zinc-800 text-white text-xs">1</button>
+                        <button className="w-8 h-8 flex items-center justify-center text-gray-400 text-xs hover:text-black">2</button>
+                        <button className="w-8 h-8 flex items-center justify-center text-gray-400 text-xs hover:text-black">3</button>
+                        <span className="text-gray-300">...</span>
+                    </div>
+                )}
+            </div>
+            <Footer/>
+        </main>
+    );
 }

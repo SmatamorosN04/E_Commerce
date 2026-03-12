@@ -8,6 +8,7 @@ import { Footer } from '@/app/components/Footer/Footer';
 import {useEffect, useState} from "react";
 import ProductCard from "@/app/components/ProductCard/ProductCard";
 import {BrandLogos} from "@/app/components/BrandLogos/BrandLogos";
+import Link from "next/dist/client/link";
 
 export default function HomePage() {
   const categories = ['TODO', 'MOTOR', 'FRENOS', 'ELÉCTRICO', 'ACCESORIOS'];
@@ -52,9 +53,9 @@ export default function HomePage() {
             )}
           </div>
           <div className="mt-16 text-center">
-            <button className="text-gray-900 border-b border-gray-900 pb-1 uppercase tracking-widest text-xs">
+            <Link href={"/shop"} className="text-gray-900 border-b border-gray-900 pb-1 uppercase tracking-widest text-xs">
               Explorar Más →
-            </button>
+            </Link>
           </div>
         </section>
         <BrandLogos/>

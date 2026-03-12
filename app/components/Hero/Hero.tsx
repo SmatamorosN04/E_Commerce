@@ -1,6 +1,12 @@
 import { Button } from '../Button/Button'
+import { useRouter } from 'next/navigation';
 
 export default function Hero() {
+    const router = useRouter();
+
+    const handleGoToShop = () => {
+        router.push('/shop');
+    };
     return (
         <section className="relative h-[85vh] w-full bg-gray-900 overflow-hidden">
             <div className="absolute inset-0 z-0">
@@ -21,7 +27,9 @@ export default function Hero() {
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4">
-                    <Button variant="ghost" className="border-white/50 text-white">
+                    <Button
+                        onClick={handleGoToShop}
+                        variant="ghost" className="border-white/50 text-white">
                         Ver Catálogo
                     </Button>
                 </div>
