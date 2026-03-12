@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { InventoryTable } from "../../components/InventoryTable/InventoryTable";
 import { StockMovementModal } from "../../components/StockMovementModal/StockMovementModal";
-import { Package, RefreshCcw } from "lucide-react";
+import {Layers, Package, Plus, RefreshCcw} from "lucide-react";
 
 export default function IventoryPage() {
     const [variants, setVariants] = useState([]);
@@ -41,23 +41,53 @@ export default function IventoryPage() {
                 </button>
             </header>
 
-            <main className="max-w-6xl mx-auto">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div className="bg-white p-6 border border-gray-100 flex items-center gap-4">
-                        <div className="w-10 h-10 bg-gray-50 flex items-center justify-center text-black">
+            <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
+
+                    <div className="bg-white p-6 border border-gray-100 flex items-center gap-4 rounded-md shadow-sm">
+                        <div className="w-12 h-12 bg-gray-50 flex items-center justify-center text-black shrink-0 rounded-sm">
                             <Package className="w-5 h-5 stroke-1" />
                         </div>
-                        <div>
-                            <p className="text-[9px] uppercase tracking-widest text-gray-400">Total Items</p>
-                            <p className="text-lg font-bold">{variants.length}</p>
+                        <div className="flex flex-col justify-center">
+                            <p className="text-[10px] uppercase tracking-[0.2em] text-gray-400">Total Items</p>
+                            <p className="text-xl font-bold leading-none mt-1">{variants.length}</p>
                         </div>
                     </div>
+
+                    <button
+                        onClick={() => console.log("Abrir registro individual")}
+                        className="bg-white border border-gray-300 flex rounded-md items-stretch gap-4 hover:border-black transition-all group text-left overflow-hidden shadow-sm"
+                    >
+                        <div className="w-10 bg-gray-100 group-hover:bg-black group-hover:text-white flex items-center justify-center text-black transition-colors shrink-0">
+                            <Plus className="w-5 h-5 stroke-1"/>
+                        </div>
+                        <div className="flex flex-col justify-center py-4">
+                            <p className="text-[10px] uppercase tracking-[0.2em] text-gray-400">Individual</p>
+                            <p className="text-sm font-bold uppercase tracking-tight pr-2">Nuevo Producto</p>
+                        </div>
+                    </button>
+
+                    <button
+                        onClick={() => console.log("Abrir carga masiva")}
+                        className="bg-white border border-gray-300 flex rounded-md items-stretch gap-4 hover:border-black transition-all group text-left overflow-hidden shadow-sm"
+                    >
+                        <div className="w-10 bg-gray-100 group-hover:bg-black group-hover:text-white flex items-center justify-center text-black transition-colors shrink-0">
+                            <Layers className="w-5 h-5 stroke-1"/>
+                        </div>
+                        <div className="flex flex-col justify-center py-4">
+                            <p className="text-[10px] uppercase tracking-[0.2em] text-gray-400">Procesamiento</p>
+                            <p className="text-sm font-bold uppercase tracking-tight pr-2">Carga Masiva</p>
+                        </div>
+                    </button>
                 </div>
 
-                <InventoryTable
-                    variants={variants}
-                    onAdjust={(v) => setSelectedVariant(v)}
-                />
+                <div className="overflow-x-auto bg-white border border-gray-100 rounded-md">
+                    <InventoryTable
+                        variants={variants}
+                        onAdjust={(v) => setSelectedVariant(v)}
+                    />
+                </div>
             </main>
 
             <StockMovementModal
