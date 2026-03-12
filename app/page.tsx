@@ -56,6 +56,9 @@ export default function HomePage() {
             <Link href={"/shop"} className="text-gray-900 border-b border-gray-900 pb-1 uppercase tracking-widest text-xs">
               Explorar Más →
             </Link>
+              <Link href={"/admin/inventory"} className="text-gray-900 border-b border-gray-900 pb-1 uppercase tracking-widest text-xs">
+                  Go to Admin Page →
+              </Link>
           </div>
         </section>
         <BrandLogos/>

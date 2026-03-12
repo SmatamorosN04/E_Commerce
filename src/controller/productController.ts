@@ -34,8 +34,7 @@ export const createProduct = async (req: Request, res: Response) => {
         const variantRes = await client.query(variantQuery, [productId, variant_name, initial_stock]);
         const variantId = variantRes.rows[0].id;
 
-        // 3. Registrar el primer LOG de inventario (Vital para Reporte de Ganancias)
-        // Guardamos el costo de compra para saber cuánto invertimos
+
         const logQuery = `
             INSERT INTO inventory_logs (variant_id, type, quantity, cost_at_moment, reason)
             VALUES ($1, 'Entrada', $2, $3, $4);
