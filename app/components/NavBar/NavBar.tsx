@@ -3,7 +3,7 @@ import { Menu, Search, ShoppingBag } from 'lucide-react';
 import { useState} from "react";
 import { MenuDrawer } from "../MenuDrawer/MenuDrawer";
 import { CartContent } from "../CartContent/CartContent";
-import {SearchDrawer} from "../SearchDrawer/SearchDrawer";
+import { SearchDrawer } from "../SearchDrawer/SearchDrawer";
 
 
 
