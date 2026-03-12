@@ -1,9 +1,10 @@
 'use client'
 import { Menu, Search, ShoppingBag } from 'lucide-react';
 import { useState} from "react";
-import { MenuDrawer} from "@/app/components/MenuDrawer/MenuDrawer";
-import { CartContent} from "@/app/components/CartContent/CartContent";
-import {SearchDrawer} from "@/app/components/SearchDrawer/SearchDrawer";
+import { MenuDrawer } from "../MenuDrawer/MenuDrawer";
+import { CartContent } from "../CartContent/CartContent";
+import {SearchDrawer} from "../SearchDrawer/SearchDrawer";
+
 
 
 export const Navbar = () => {
