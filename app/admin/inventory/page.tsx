@@ -1,15 +1,18 @@
 'use client'
-import { useState, useEffect } from "react";
+import {useState, useEffect, useMemo} from "react";
 import { InventoryTable } from "../../components/InventoryTable/InventoryTable";
 import { StockMovementModal } from "../../components/StockMovementModal/StockMovementModal";
-import {Layers, Package, Plus, RefreshCcw} from "lucide-react";
+import {Layers, Package, Plus, RefreshCcw, Search} from "lucide-react";
 import {CreateProductModal} from "@/app/components/CreatePrdouctModal/CreateProductModal";
+import Link from "next/dist/client/link";
 
 export default function InventoryPage() {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [variants, setVariants] = useState([]);
     const [selectedVariant, setSelectedVariant] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
+
 
     const loadData = async () => {
         setLoading(true);
@@ -28,6 +31,14 @@ export default function InventoryPage() {
         loadData();
     }, []);
 
+    const filteredVariants = useMemo(() => {
+        return variants.filter((v: any) =>
+            v.product_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            v.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (v.category_name && v.category_name.toLowerCase().includes(searchTerm.toLowerCase()))
+        );
+    }, [searchTerm, variants]);
+
     return (
         <div className="min-h-screen bg-gray-50/50 p-8">
             <header className="max-w-6xl mx-auto mb-10 flex justify-between items-end">
@@ -44,6 +55,25 @@ export default function InventoryPage() {
             </header>
 
             <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="relative mb-8 ">
+                    <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                        <Search className="h-3.5 w-3.5 ml-2 text-gray-400" />
+                    </div>
+                    <input
+                        type="text"
+                        placeholder="BUSCAR POR NOMBRE, SKU O CATEGORÍA..."
+                        className="w-full bg-white border border-gray-100 py-4 pl-10 pr-4 text-[10px] uppercase tracking-[0.2em] outline-none focus:border-black transition-all shadow-sm rounded-sm placeholder:text-gray-300"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    {searchTerm && (
+                        <div className="mt-2 flex justify-end">
+                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest animate-in fade-in slide-in-from-top-1 duration-300">
+                                Mostrando {filteredVariants.length} {filteredVariants.length === 1 ? 'coincidencia' : 'coincidencias'}
+                            </span>
+                        </div>
+                    )}
+                </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
 
@@ -70,7 +100,8 @@ export default function InventoryPage() {
                         </div>
                     </button>
 
-                    <button
+                    <Link
+                        href={'/admin/inventory/bulk-upload'}
                         onClick={() => console.log("Abrir carga masiva")}
                         className="bg-white border border-gray-300 flex rounded-md items-stretch gap-4 hover:border-black transition-all group text-left overflow-hidden shadow-sm"
                     >
@@ -81,14 +112,21 @@ export default function InventoryPage() {
                             <p className="text-[10px] uppercase tracking-[0.2em] text-gray-400">Procesamiento</p>
                             <p className="text-sm font-bold uppercase tracking-tight pr-2">Carga Masiva</p>
                         </div>
-                    </button>
+                    </Link>
                 </div>
 
                 <div className="overflow-x-auto bg-white border border-gray-100 rounded-md">
                     <InventoryTable
-                        variants={variants}
+                        variants={filteredVariants}
                         onAdjust={(v) => setSelectedVariant(v)}
                     />
+                    {filteredVariants.length === 0 && searchTerm !== "" && (
+                        <div className="p-20 text-center">
+                            <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400 font-bold">
+                                No se encontraron coincidencias para "{searchTerm}"
+                            </p>
+                        </div>
+                    )}
                 </div>
             </main>
 
