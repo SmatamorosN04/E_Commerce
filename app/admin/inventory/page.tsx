@@ -3,8 +3,10 @@ import { useState, useEffect } from "react";
 import { InventoryTable } from "../../components/InventoryTable/InventoryTable";
 import { StockMovementModal } from "../../components/StockMovementModal/StockMovementModal";
 import {Layers, Package, Plus, RefreshCcw} from "lucide-react";
+import {CreateProductModal} from "@/app/components/CreatePrdouctModal/CreateProductModal";
 
-export default function IventoryPage() {
+export default function InventoryPage() {
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [variants, setVariants] = useState([]);
     const [selectedVariant, setSelectedVariant] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -56,7 +58,7 @@ export default function IventoryPage() {
                     </div>
 
                     <button
-                        onClick={() => console.log("Abrir registro individual")}
+                        onClick={() => setIsCreateModalOpen(true)}
                         className="bg-white border border-gray-300 flex rounded-md items-stretch gap-4 hover:border-black transition-all group text-left overflow-hidden shadow-sm"
                     >
                         <div className="w-10 bg-gray-100 group-hover:bg-black group-hover:text-white flex items-center justify-center text-black transition-colors shrink-0">
@@ -89,6 +91,12 @@ export default function IventoryPage() {
                     />
                 </div>
             </main>
+
+            <CreateProductModal
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
+                onSuccess={loadData}
+            />
 
             <StockMovementModal
                 isOpen={!!selectedVariant}

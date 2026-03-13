@@ -86,13 +86,16 @@ export const getAllInventory = async (req: any, res: any) => {
             SELECT
                 pv.id AS variant_id,
                 p.id as product_id,
-                p.name AS product_name,   
-                p.sku,                    
-                pv.variant_name,          
-                pv.stock_actual AS stock, 
-                p.base_price + pv.additional_price AS unit_cost 
+                p.name AS product_name,
+                p.sku,
+                pv.variant_name,
+                pv.stock_actual AS stock,
+                p.base_price AS base_price,
+                (p.base_price + COALESCE(pv.additional_price, 0)) AS unit_cost,
+                COALESCE(c.name, 'Sin Categoría') AS category_name
             FROM product_variants pv
                      JOIN products p ON pv.product_id = p.id
+                     LEFT JOIN categories c ON p.category_id = c.id
             ORDER BY p.name ASC;
         `;
 
