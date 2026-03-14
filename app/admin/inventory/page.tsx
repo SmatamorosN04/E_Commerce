@@ -5,6 +5,7 @@ import { StockMovementModal } from "../../components/StockMovementModal/StockMov
 import {Layers, Package, Plus, RefreshCcw, Search} from "lucide-react";
 import {CreateProductModal} from "@/app/components/CreatePrdouctModal/CreateProductModal";
 import Link from "next/dist/client/link";
+import {AdminSidebar} from "@/app/components/AdminSidebar/AdminSidebar";
 
 export default function InventoryPage() {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -12,7 +13,6 @@ export default function InventoryPage() {
     const [selectedVariant, setSelectedVariant] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
-
 
     const loadData = async () => {
         setLoading(true);
@@ -40,96 +40,107 @@ export default function InventoryPage() {
     }, [searchTerm, variants]);
 
     return (
-        <div className="min-h-screen bg-gray-50/50 p-8">
-            <header className="max-w-6xl mx-auto mb-10 flex justify-between items-end">
-                <div>
-                    <h1 className="text-xl uppercase tracking-[0.4em] font-light text-gray-900">Gestion de Inventario</h1>
-                    <p className="text-xs text-gray-400 uppercase tracking-widest mt-2">Control de Stock y trazabilidad inmutable</p>
-                </div>
-                <button
-                    onClick={loadData}
-                    className="p-2 text-gray-400 hover:text-black transition-colors"
-                >
-                    <RefreshCcw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-                </button>
-            </header>
+        // Contenedor Flex para que el Sidebar y el Contenido vivan lado a lado
+        <div className="flex min-h-screen bg-gray-50/50">
 
-            <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="relative mb-8 ">
-                    <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                        <Search className="h-3.5 w-3.5 ml-2 text-gray-400" />
+            {/* 1. EL SIDEBAR (Componente Reutilizable) */}
+            <AdminSidebar />
+
+            {/* 2. AREA DE CONTENIDO (Scrollable) */}
+            <main className="flex-1 p-8 overflow-y-auto">
+
+                <header className="max-w-6xl mx-auto mb-10 flex justify-between items-end">
+                    <div>
+                        <h1 className="text-xl uppercase tracking-[0.4em] font-light text-gray-900">Gestion de Inventario</h1>
+                        <p className="text-xs text-gray-400 uppercase tracking-widest mt-2">Control de Stock y trazabilidad inmutable</p>
                     </div>
-                    <input
-                        type="text"
-                        placeholder="BUSCAR POR NOMBRE, SKU O CATEGORÍA..."
-                        className="w-full bg-white border border-gray-100 py-4 pl-10 pr-4 text-[10px] uppercase tracking-[0.2em] outline-none focus:border-black transition-all shadow-sm rounded-sm placeholder:text-gray-300"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    {searchTerm && (
-                        <div className="mt-2 flex justify-end">
-                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest animate-in fade-in slide-in-from-top-1 duration-300">
-                                Mostrando {filteredVariants.length} {filteredVariants.length === 1 ? 'coincidencia' : 'coincidencias'}
-                            </span>
-                        </div>
-                    )}
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
-
-                    <div className="bg-white p-6 border border-gray-100 flex items-center gap-4 rounded-md shadow-sm">
-                        <div className="w-12 h-12 bg-gray-50 flex items-center justify-center text-black shrink-0 rounded-sm">
-                            <Package className="w-5 h-5 stroke-1" />
-                        </div>
-                        <div className="flex flex-col justify-center">
-                            <p className="text-[10px] uppercase tracking-[0.2em] text-gray-400">Total Items</p>
-                            <p className="text-xl font-bold leading-none mt-1">{variants.length}</p>
-                        </div>
-                    </div>
-
                     <button
-                        onClick={() => setIsCreateModalOpen(true)}
-                        className="bg-white border border-gray-300 flex rounded-md items-stretch gap-4 hover:border-black transition-all group text-left overflow-hidden shadow-sm"
+                        onClick={loadData}
+                        className="p-2 text-gray-400 hover:text-black transition-colors"
                     >
-                        <div className="w-10 bg-gray-100 group-hover:bg-black group-hover:text-white flex items-center justify-center text-black transition-colors shrink-0">
-                            <Plus className="w-5 h-5 stroke-1"/>
-                        </div>
-                        <div className="flex flex-col justify-center py-4">
-                            <p className="text-[10px] uppercase tracking-[0.2em] text-gray-400">Individual</p>
-                            <p className="text-sm font-bold uppercase tracking-tight pr-2">Nuevo Producto</p>
-                        </div>
+                        <RefreshCcw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
                     </button>
+                </header>
 
-                    <Link
-                        href={'/admin/inventory/bulk-upload'}
-                        onClick={() => console.log("Abrir carga masiva")}
-                        className="bg-white border border-gray-300 flex rounded-md items-stretch gap-4 hover:border-black transition-all group text-left overflow-hidden shadow-sm"
-                    >
-                        <div className="w-10 bg-gray-100 group-hover:bg-black group-hover:text-white flex items-center justify-center text-black transition-colors shrink-0">
-                            <Layers className="w-5 h-5 stroke-1"/>
+                <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                    {/* BUSCADOR */}
+                    <div className="relative mb-8  z-1 ">
+                        <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                            <Search className="h-3.5 w-3.5 ml-2 text-gray-400" />
                         </div>
-                        <div className="flex flex-col justify-center py-4">
-                            <p className="text-[10px] uppercase tracking-[0.2em] text-gray-400">Procesamiento</p>
-                            <p className="text-sm font-bold uppercase tracking-tight pr-2">Carga Masiva</p>
-                        </div>
-                    </Link>
-                </div>
+                        <input
+                            type="text"
+                            placeholder="BUSCAR POR NOMBRE, SKU O CATEGORÍA..."
+                            className="w-full bg-white border border-gray-100 py-4 pl-10 pr-4 text-[10px] uppercase tracking-[0.2em] outline-none focus:border-black transition-all shadow-sm rounded-sm placeholder:text-gray-300"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                        {searchTerm && (
+                            <div className="mt-2 flex justify-end">
+                                <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest animate-in fade-in slide-in-from-top-1 duration-300">
+                                    Mostrando {filteredVariants.length} {filteredVariants.length === 1 ? 'coincidencia' : 'coincidencias'}
+                                </span>
+                            </div>
+                        )}
+                    </div>
 
-                <div className="overflow-x-auto bg-white border border-gray-100 rounded-md">
-                    <InventoryTable
-                        variants={filteredVariants}
-                        onAdjust={(v) => setSelectedVariant(v)}
-                    />
-                    {filteredVariants.length === 0 && searchTerm !== "" && (
-                        <div className="p-20 text-center">
-                            <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400 font-bold">
-                                No se encontraron coincidencias para "{searchTerm}"
-                            </p>
+                    {/* TARJETAS DE ACCIÓN */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
+                        <div className="bg-white p-6 border border-gray-100 flex items-center gap-4 rounded-md shadow-sm">
+                            <div className="w-12 h-12 bg-gray-50 flex items-center justify-center text-black shrink-0 rounded-sm">
+                                <Package className="w-5 h-5 stroke-1" />
+                            </div>
+                            <div className="flex flex-col justify-center">
+                                <p className="text-[10px] uppercase tracking-[0.2em] text-gray-400">Total Items</p>
+                                <p className="text-xl font-bold leading-none mt-1">{variants.length}</p>
+                            </div>
                         </div>
-                    )}
-                </div>
+
+                        <button
+                            onClick={() => setIsCreateModalOpen(true)}
+                            className="bg-white border border-gray-300 flex rounded-md items-stretch gap-4 hover:border-black transition-all group text-left overflow-hidden shadow-sm"
+                        >
+                            <div className="w-10 bg-gray-100 group-hover:bg-black group-hover:text-white flex items-center justify-center text-black transition-colors shrink-0">
+                                <Plus className="w-5 h-5 stroke-1"/>
+                            </div>
+                            <div className="flex flex-col justify-center py-4">
+                                <p className="text-[10px] uppercase tracking-[0.2em] text-gray-400">Individual</p>
+                                <p className="text-sm font-bold uppercase tracking-tight pr-2">Nuevo Producto</p>
+                            </div>
+                        </button>
+
+                        <Link
+                            href={'/admin/inventory/bulk-upload'}
+                            className="bg-white border border-gray-300 flex rounded-md items-stretch gap-4 hover:border-black transition-all group text-left overflow-hidden shadow-sm"
+                        >
+                            <div className="w-10 bg-gray-100 group-hover:bg-black group-hover:text-white flex items-center justify-center text-black transition-colors shrink-0">
+                                <Layers className="w-5 h-5 stroke-1"/>
+                            </div>
+                            <div className="flex flex-col justify-center py-4">
+                                <p className="text-[10px] uppercase tracking-[0.2em] text-gray-400">Procesamiento</p>
+                                <p className="text-sm font-bold uppercase tracking-tight pr-2">Carga Masiva</p>
+                            </div>
+                        </Link>
+                    </div>
+
+                    {/* TABLA */}
+                    <div className="overflow-x-auto bg-white border border-gray-100 rounded-md shadow-sm">
+                        <InventoryTable
+                            variants={filteredVariants}
+                            onAdjust={(v) => setSelectedVariant(v)}
+                        />
+                        {filteredVariants.length === 0 && searchTerm !== "" && (
+                            <div className="p-20 text-center">
+                                <p className="text-[10px] uppercase tracking-[0.3em] text-gray-400 font-bold">
+                                    No se encontraron coincidencias para "{searchTerm}"
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </section>
             </main>
 
+            {/* MODALES */}
             <CreateProductModal
                 isOpen={isCreateModalOpen}
                 onClose={() => setIsCreateModalOpen(false)}

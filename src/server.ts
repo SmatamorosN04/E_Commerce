@@ -6,6 +6,7 @@ import categoryRoutes from "./routes/categoryRoutes";
 import salesRoutes from "./routes/salesRoutes";
 import reportRoutes from './routes/reportRoutes';
 import InventoryRoutes from "./routes/inventoryRoutes";
+import dashboardRoutes from "./routes/dashboardRoutes";
 
 dotenv.config();
 
@@ -19,12 +20,12 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/sales', salesRoutes)
 app.use('/api/reports', reportRoutes)
 app.use('/api/inventory', InventoryRoutes)
-
+app.use('/api/dashboard', dashboardRoutes)
 app.get('/health', (req, res) => {
     res.json({ status: 'server online', timestamp: new Date() });
 });
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-    console.log(`🚀 Servidor e-commerce listo en puerto ${PORT}`);
+    console.log(` Servidor e-commerce listo en puerto ${PORT}`);
 });
