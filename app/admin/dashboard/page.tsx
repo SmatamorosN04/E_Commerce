@@ -1,95 +1,139 @@
 'use client'
 import { useState, useEffect } from "react";
 import { AdminSidebar } from "@/app/components/AdminSidebar/AdminSidebar";
-import { TrendingUp, AlertTriangle, DollarSign, PackageCheck, ArrowUpRight, Loader2 } from "lucide-react";
-import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import {
+    Loader2, Plus, Calendar, Package, ShoppingCart,
+    TrendingUp, DollarSign, Download, Settings, Bell
+} from "lucide-react";
+
+// Componentes modulares
+import { StatCards } from "@/app/components/StatCard/StatCard";
+import { PerformanceChart } from "@/app/components/PerformanceChart/PerformanceChart";
+import { PaymentMethodChart } from "@/app/components/PaymentMethodChart/PaymentMethodChart";
+import { InventoryTable } from "@/app/components/InventoryTable/InventoryTable";
+import { ExportReportCard } from "@/app/components/ExportReportCard/ExportReportCard";
+import { TopProductsTable } from "@/app/components/TopProductTable/TopProductTable";
 
 export default function DashboardPage() {
-    // 1. Definición de estados (Siempre al principio)
-    const [isClient, setIsClient] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [data, setData] = useState<any>({
-        totalInventoryValue: 0,
-        monthlySales: 0,
-        lowStockItems: [],
-        salesHistory: []
-    });
+    const [data, setData] = useState<any>(null);
 
-    // 2. Efecto de carga de datos
     useEffect(() => {
-        setIsClient(true); // Marcamos que ya estamos en el cliente
-
-        const fetchDashboardData = async () => {
+        const fetchData = async () => {
             try {
                 const res = await fetch('http://localhost:3001/api/dashboard/stats');
-                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-
                 const result = await res.json();
                 setData(result);
-            } catch (error) {
-                console.error("DEBUG -> Error en fetch:", error);
+            } catch (err) {
+                console.error("Error al cargar datos:", err);
             } finally {
                 setLoading(false);
             }
         };
-
-        fetchDashboardData();
+        fetchData();
     }, []);
 
-    // 3. LA LÍNEA CRÍTICA (33-45): Validación de renderizado
-    // Solo permitimos el renderizado si ya estamos en el cliente
-    if (!isClient) return null;
-
-    // Si aún está cargando, mostramos el spinner dentro del layout para evitar saltos visuales
-    if (loading) {
-        return (
-            <div className="flex min-h-screen bg-gray-50/50">
-                <AdminSidebar />
-                <div className="flex-1 flex items-center justify-center">
-                    <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
-                </div>
+    if (loading || !data) return (
+        <div className="flex h-screen items-center justify-center bg-[#F9FAFB]">
+            <div className="text-center">
+                <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
+                <p className="text-sm font-bold text-gray-500 animate-pulse">Cargando métricas de La Abuela...</p>
             </div>
-        );
-    }
+        </div>
+    );
 
-    // 4. Renderizado Final (Solo ocurre cuando isClient=true y loading=false)
     return (
-        <div className="flex min-h-screen bg-gray-50/50">
+        <div className="flex min-h-screen bg-[#F9FAFB] font-sans selection:bg-blue-100">
             <AdminSidebar />
-            <main className="flex-1 p-6 md:p-12 pt-20 lg:pt-12 overflow-y-auto">
-                <div className="max-w-7xl mx-auto">
-                    <header className="mb-10">
-                        <h1 className="text-xl uppercase tracking-[0.4em] font-light text-gray-900">Panel de Control</h1>
-                        <p className="text-xs text-gray-400 uppercase tracking-widest mt-2">Repuestos La Abuela — Insights en tiempo real</p>
-                    </header>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                        {/* KPI 1 */}
-                        <div className="bg-white p-6 border border-gray-100 rounded-sm shadow-sm">
-                            <p className="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-2">Valor de Inventario</p>
-                            <h2 className="text-2xl font-bold text-gray-900">
-                                C$ {Number(data?.totalInventoryValue || 0).toLocaleString()}
-                            </h2>
+            <main className="flex-1 p-6 md:p-10 max-w-[1600px] mx-auto">
+                <header className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-12 gap-6">
+                    <div>
+                        <div className="flex items-center gap-2 text-xs font-black text-blue-600 uppercase tracking-[0.2em] mb-2">
+                            <div className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+                            Sistema en tiempo real
                         </div>
-
-                        {/* KPI 2 */}
-                        <div className="bg-white p-6 border border-gray-100 rounded-sm shadow-sm">
-                            <p className="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-2">Ventas del Mes</p>
-                            <h2 className="text-2xl font-bold text-gray-900">
-                                C$ {Number(data?.monthlySales || 0).toLocaleString()}
-                            </h2>
-                        </div>
-
-                        {/* KPI 3 */}
-                        <div className="bg-white p-6 border border-gray-100 rounded-sm shadow-sm border-l-4 border-l-amber-400">
-                            <p className="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-2 text-amber-600">Stock Crítico</p>
-                            <h2 className="text-2xl font-bold text-gray-900">
-                                {data?.lowStockItems?.length || 0} SKU's
-                            </h2>
-                        </div>
+                        <h1 className="text-4xl font-black text-gray-900 tracking-tight">Dashboard Central</h1>
+                        <p className="text-base text-gray-400 font-medium mt-1">
+                            Bienvenido, <span className="text-gray-900 font-bold">Sergio Matamoros</span>. Revisa el estado de tu negocio.
+                        </p>
                     </div>
 
-                </div>
+                    <div className="flex items-center gap-4 w-full lg:w-auto">
+                        <button className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-5 py-3 bg-white border border-gray-200 rounded-2xl text-sm font-bold text-gray-600 shadow-sm hover:bg-gray-50 transition-all">
+                            <Calendar size={18} className="text-gray-400" />
+                            {new Date().toLocaleDateString('es-NI', { month: 'short', year: 'numeric' })}
+                        </button>
+                        <button className="p-3 bg-white border border-gray-200 text-gray-400 rounded-2xl hover:text-blue-600 transition-all">
+                            <Bell size={22} />
+                        </button>
+                        <button className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl shadow-xl shadow-blue-200 hover:bg-blue-700 hover:-translate-y-1 transition-all">
+                            <Plus size={22} strokeWidth={3} />
+                            <span className="font-bold">Nueva Venta</span>
+                        </button>
+                    </div>
+                </header>
+
+                <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                    <StatCards
+                        title="Valor Inventario"
+                        value={`C$ ${data.totalInventoryValue.toLocaleString()}`}
+                        change="+2.4%"
+                        icon={<Package size={22} />}
+                    />
+                    <StatCards
+                        title="Ventas Mensuales"
+                        value={`C$ ${data.monthlySales.toLocaleString()}`}
+                        change="+8.2%"
+                        icon={<ShoppingCart size={22} />}
+                    />
+                    <StatCards
+                        title="Ganancia Real"
+                        value={`C$ ${data.monthlyProfit.toLocaleString()}`}
+                        change="+14.1%"
+                        icon={<TrendingUp size={22} />}
+                        isPositive={true}
+                    />
+                    <StatCards
+                        title="Productos Críticos"
+                        value={data.lowStockItems.length}
+                        change={data.lowStockItems.length > 0 ? "Atención" : "Todo bien"}
+                        icon={<DollarSign size={22} />}
+                        isPositive={data.lowStockItems.length === 0}
+                    />
+                </section>
+
+                <section className="grid grid-cols-1 lg:grid-cols-3 gap-10 mb-12">
+                    <div className="lg:col-span-2 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden flex flex-col">
+                        <PerformanceChart data={data.salesHistory} />
+                    </div>
+                    <div className="lg:col-span-1">
+                        <PaymentMethodChart
+                            data={data.paymentStats}
+                            total={data.monthlySales}
+                        />
+                    </div>
+                </section>
+
+                <section className="grid grid-cols-1 lg:grid-cols-3 gap-10 mb-12">
+                    <div className="lg:col-span-2">
+                        <TopProductsTable items={data.topProducts || []} />
+                    </div>
+                    <div className="lg:col-span-1">
+                        <ExportReportCard salesData={[]} />
+                    </div>
+                </section>
+
+                <section className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
+                    <div className="p-8 border-b border-gray-50 flex justify-between items-center">
+                        <h3 className="text-xl font-black text-gray-900">Items en Alerta de Stock</h3>
+                        <button className="text-blue-600 text-sm font-bold hover:underline">Ver todo el inventario</button>
+                    </div>
+                    <InventoryTable
+                        variants={data.lowStockItems}
+                        onAdjust={(variant) => console.log("Ajuste", variant)}
+                    />
+                </section>
             </main>
         </div>
     );
