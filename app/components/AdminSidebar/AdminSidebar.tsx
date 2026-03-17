@@ -25,7 +25,7 @@ export const AdminSidebar = () => {
         { name: 'Inventario', icon: Package, path: '/admin/inventory' },
         { name: 'Carga Masiva', icon: Layers, path: '/admin/inventory/bulk-upload' },
         { name: 'Ventas', icon: ShoppingCart, path: '/admin/sales' },
-        { name: 'Kardex / Historial', icon: History, path: '/admin/history' },
+        { name: ' Historial', icon: History, path: '/admin/history' },
     ];
 
     const toggleMenu = () => setIsOpen(!isOpen);

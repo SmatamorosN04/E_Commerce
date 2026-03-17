@@ -1,1 +1,16 @@
 @import "tailwindcss";
+
+@theme {
+    --radius-4xl: 2.5rem;
+
+
+    --color-brand-blue: #2563eb;
+    --color-bg-main: #f9fafb;
+}
+
+@layer base {
+    body {
+        @apply bg-[#f9fafb] text-gray-900 antialiased;
+        font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    }
+}

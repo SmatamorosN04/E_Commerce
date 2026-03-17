@@ -45,33 +45,38 @@ export const getDailySales = async (_req: Request, res: Response) => {
     }
 };
 
-export const getSalesReport = async ( req: Request, res: Response) => {
-    const { start_date, end_date } = req.query;
+export const getSalesReport = async (req: Request, res: Response) => {
+    // Si no vienen fechas, usamos un rango amplio (por ejemplo, desde el año 2000 hasta hoy)
+    const start = req.query.start_date || '2000-01-01';
+    const end = req.query.end_date || new Date().toISOString();
 
-    try{
+    try {
         const reportQuery = `
-        SELECT
-            o.id,
-            o.order_number as factura,
-            o.costumer_name as cliente,
-            o.total_amount as total,
-            o.payment_method as pago, 
-            o.created_at as fecha,
-            SUM(oi.profit)margin * oi.quantity) as utilidad_total
-            FROM orders o 
-        JOIN order_items oi ON o.id = oi.order_id 
-        WHERE o.created_at BETWEEN $1 AND $2 
-        GROUP BY o.id 
-        ORDER BY o.created_at DESC 
+            SELECT
+                o.id,
+                o.id as factura, -- Usamos el ID como factura ya que no hay order_number
+                'Consumidor Final' as cliente, -- Hardcodeado porque no existe en tu tabla orders
+                o.total_amount as total,
+                'Efectivo' as pago, -- Ajustar según tus necesidades
+                o.created_at as fecha,
+                SUM(oi.profit_margin * oi.quantity) as utilidad_total
+            FROM orders o
+                     JOIN order_items oi ON o.id = oi.order_id
+            WHERE o.created_at BETWEEN $1 AND $2
+            GROUP BY o.id, o.total_amount, o.created_at
+            ORDER BY o.created_at DESC;
         `;
 
-        const result = await pool.query(reportQuery, [start_date, end_date]);
+        const result = await pool.query(reportQuery, [start, end]);
         res.json(result.rows);
-    }catch (error: any){
-        res.status(500).json({ message: "Error al generar reporte", error: error.message});
+    } catch (error: any) {
+        console.error("Error SQL detallado:", error.message);
+        res.status(500).json({
+            message: "Error al generar reporte",
+            error: error.message
+        });
     }
 }
-
 export const getTopProducts = async (req: Request, res: Response) => {
     try {
         const topQuery = `
