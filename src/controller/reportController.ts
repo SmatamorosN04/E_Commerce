@@ -44,3 +44,58 @@ export const getDailySales = async (_req: Request, res: Response) => {
         res.status(500).json({ error: 'Error al calcular ganancias diarias'});
     }
 };
+
+export const getSalesReport = async (req: Request, res: Response) => {
+    // Si no vienen fechas, usamos un rango amplio (por ejemplo, desde el año 2000 hasta hoy)
+    const start = req.query.start_date || '2000-01-01';
+    const end = req.query.end_date || new Date().toISOString();
+
+    try {
+        const reportQuery = `
+            SELECT
+                o.id,
+                o.id as factura, -- Usamos el ID como factura ya que no hay order_number
+                'Consumidor Final' as cliente, -- Hardcodeado porque no existe en tu tabla orders
+                o.total_amount as total,
+                'Efectivo' as pago, -- Ajustar según tus necesidades
+                o.created_at as fecha,
+                SUM(oi.profit_margin * oi.quantity) as utilidad_total
+            FROM orders o
+                     JOIN order_items oi ON o.id = oi.order_id
+            WHERE o.created_at BETWEEN $1 AND $2
+            GROUP BY o.id, o.total_amount, o.created_at
+            ORDER BY o.created_at DESC;
+        `;
+
+        const result = await pool.query(reportQuery, [start, end]);
+        res.json(result.rows);
+    } catch (error: any) {
+        console.error("Error SQL detallado:", error.message);
+        res.status(500).json({
+            message: "Error al generar reporte",
+            error: error.message
+        });
+    }
+}
+export const getTopProducts = async (req: Request, res: Response) => {
+    try {
+        const topQuery = `
+     SELECT 
+     p.name,
+     v.variant_name,
+     SUM(oi.quantity) as cantidad_vendida,
+     SUM(oi.sold_price * oi.quantity) as ingresos_totales,
+     SUM(oi.profit_margin * oi.quantity) as margen_total
+ FROM order_items oi 
+ JOIN product_variants v ON oi.variant_id = v.id
+ JOIN products p ON v.produt_id = p.id
+ GROUP BY p.name, v.variant_name
+ ORDER BY margen_total DESC 
+ LIMIT 10
+     `;
+        const result = await pool.query(topQuery)
+        res.json(result.rows)
+    }catch ( error: any){
+        res.status(500).json({ message: "error al obtener top produtos", error: error.message});
+    }
+}
