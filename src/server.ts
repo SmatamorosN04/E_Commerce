@@ -24,6 +24,7 @@ app.use('/api/inventory', InventoryRoutes)
 app.use('/api/dashboard', dashboardRoutes)
 app.use('/api/logs', logsRoutes);
 
+
 app.get('/health', (req, res) => {
     res.json({ status: 'server online', timestamp: new Date() });
 });

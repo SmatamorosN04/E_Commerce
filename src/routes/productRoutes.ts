@@ -4,7 +4,7 @@ import {createProduct, createProductBulk, getAllProducts} from '../controller/pr
 const router = Router();
 
 
-router.post('/', createProduct);
+router.post('/create', createProduct);
 router.post('/bulk', createProductBulk)
 router.get('/', getAllProducts)
 
