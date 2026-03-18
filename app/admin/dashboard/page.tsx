@@ -86,7 +86,7 @@ export default function DashboardPage() {
                 <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
                     <StatCards
                         title="Valor Inventario"
-                        value={`C$ ${(data?.totalInventoryValue || 0).toLocaleString('es-NI')}`}
+                        value={`C$ ${Number(data?.totalInventoryValue || 0).toLocaleString('es-NI')}`}
                         change="Stock Actual"
                         icon={<Package size={22} />}
                     />
@@ -100,7 +100,7 @@ export default function DashboardPage() {
 
                     <StatCards
                         title="Ganancia Real"
-                        value={`C$ ${(data.monthlyProfit || 0)}`}
+                        value={`C$ ${(data.monthlyProfit || 0).toLocaleString('es-NI')}`}
                         change={`${((data?.monthlyProfit / data?.monthlySales) * 100 || 0).toFixed(1)}% de margen`}icon={<TrendingUp size={22} />}
                         isPositive={parseFloat(marginPercentage) > 0}
                     />
