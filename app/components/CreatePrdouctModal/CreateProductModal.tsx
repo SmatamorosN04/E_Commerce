@@ -17,10 +17,10 @@ export const CreateProductModal = ({ isOpen, onClose, onSuccess }: Props) => {
         name: '',
         description: '',
         base_price: 0,
+        cost_price: 0,
         category_id: '', // Nuevo campo
         variant_name: 'Estándar', // Ahora editable
         initial_stock: 0,
-        initial_cost: 0
     });
 
     // Cargar categorías al abrir el modal
@@ -39,7 +39,7 @@ export const CreateProductModal = ({ isOpen, onClose, onSuccess }: Props) => {
         e.preventDefault();
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:3001/api/products', {
+            const response = await fetch('http://localhost:3001/api/products/create', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
@@ -139,7 +139,7 @@ export const CreateProductModal = ({ isOpen, onClose, onSuccess }: Props) => {
                                         type="number"
                                         className="w-full border-b border-gray-100 py-2 text-xs outline-none focus:border-black transition-all"
                                         required
-                                        onChange={(e) => setFormData({ ...formData, initial_cost: Number(e.target.value) })}
+                                        onChange={(e) => setFormData({ ...formData, cost_price: Number(e.target.value) })}
                                     />
                                 </div>
                                 <div className="group">

@@ -82,3 +82,49 @@ export const createSale = async (req: Request, res: Response) => {
     }
 };
 
+export const getSalesReport = async (req: Request, res: Response) => {
+    const { startDate, endDate } = req.query;
+
+    try {
+        // Si no vienen fechas, por defecto traemos los últimos 30 días
+        const start = startDate || new Date(new Date().setDate(new Date().getDate() - 30)).toISOString();
+        const end = endDate || new Date().toISOString();
+
+        const sql = `
+            SELECT 
+                o.id AS factura_id,
+                o.created_at AS fecha,
+                o.total_amount AS total_con_iva,
+                -- Calculamos el desglose del IVA 15% para el reporte
+                ROUND(o.total_amount / 1.15, 2) AS subtotal,
+                ROUND(o.total_amount - (o.total_amount / 1.15), 2) AS iva_total,
+                o.status,
+                json_agg(json_build_object(
+                    'producto', p.name,
+                    'cantidad', oi.quantity,
+                    'precio_unitario', oi.sold_price
+                )) AS detalles
+            FROM orders o
+            JOIN order_items oi ON o.id = oi.order_id
+            JOIN product_variants v ON oi.variant_id = v.id
+            JOIN products p ON v.product_id = p.id
+            WHERE o.created_at >= $1 AND o.created_at <= $2
+              AND o.status = 'Completada'
+            GROUP BY o.id
+            ORDER BY o.created_at DESC;
+        `;
+
+        const result = await pool.query(sql, [start, end]);
+
+        res.json({
+            success: true,
+            count: result.rowCount,
+            data: result.rows
+        });
+
+    } catch (error: any) {
+        console.error("Error en reporte de ventas:", error);
+        res.status(500).json({ message: "Error al generar el reporte comercial." });
+    }
+};
+

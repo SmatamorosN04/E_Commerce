@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "db:init": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "backend": "ts-node-dev -P tsconfig.node.json --respawn --transpile-only src/server.ts",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

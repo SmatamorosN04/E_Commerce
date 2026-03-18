@@ -5,13 +5,13 @@ import { MoreHorizontal } from "lucide-react";
 const COLORS = ['#2563eb', '#fbbf24', '#10b981', '#8b5cf6'];
 
 export const PaymentMethodChart = ({ data, total }: { data: any[], total: number }) => (
-    <div className="bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-sm flex flex-col h-full">
+    <div className="bg-white rounded-4xl p-8 border border-gray-100 shadow-sm flex flex-col h-full">
         <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-bold text-gray-900">Ventas por origen</h3>
             <MoreHorizontal className="text-gray-300 cursor-pointer" />
         </div>
 
-        <div className="relative flex-1 min-h-[220px]">
+        <div className="relative flex-1 min-h-55">
             <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                     <Pie data={data} innerRadius={75} outerRadius={95} paddingAngle={8} dataKey="value" cornerRadius={10}>

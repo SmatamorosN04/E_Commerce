@@ -39,14 +39,46 @@ export default function InventoryPage() {
         );
     }, [searchTerm, variants]);
 
+    const handleDeleteProduxt = async (productId: string | undefined, name: string) => {
+        // 1. Validaciones de seguridad
+        if (!productId || productId === "undefined") {
+            console.error("Error: ID de producto no encontrado para:", name);
+            alert("No se puede procesar la solicitud: ID inválido.");
+            return;
+        }
+
+        // 2. Confirmación con el usuario (Mensaje más acorde al Soft Delete)
+        const confirmed = window.confirm(
+            `¿ESTÁS SEGURO DE RETIRAR "${name.toUpperCase()}" DEL CATÁLOGO?\n\nEl producto ya no aparecerá en el inventario, pero se conservará el historial de ventas.`
+        );
+
+        if (confirmed) {
+            try {
+
+                const res = await fetch(`http://localhost:3001/api/inventory/products/${productId}`, {
+                    method: 'DELETE',
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                     loadData();
+                } else {
+                    // Si el backend devuelve un error (ej. 404 o 500)
+                    alert(data.message || 'Hubo un problema al retirar el producto.');
+                }
+            } catch (error) {
+                console.error('Error en la comunicación con el servidor:', error);
+                alert('Error de conexión. Verifica que el servidor esté encendido.');
+            }
+        }
+    };
+
     return (
-        // Contenedor Flex para que el Sidebar y el Contenido vivan lado a lado
         <div className="flex min-h-screen bg-gray-50/50">
 
-            {/* 1. EL SIDEBAR (Componente Reutilizable) */}
             <AdminSidebar />
 
-            {/* 2. AREA DE CONTENIDO (Scrollable) */}
             <main className="flex-1 p-8 overflow-y-auto">
 
                 <header className="max-w-6xl mx-auto mb-10 flex justify-between items-end">
@@ -63,7 +95,6 @@ export default function InventoryPage() {
                 </header>
 
                 <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                    {/* BUSCADOR */}
                     <div className="relative mb-8  z-1 ">
                         <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
                             <Search className="h-3.5 w-3.5 ml-2 text-gray-400" />
@@ -123,11 +154,12 @@ export default function InventoryPage() {
                         </Link>
                     </div>
 
-                    {/* TABLA */}
                     <div className="overflow-x-auto bg-white border border-gray-100 rounded-md shadow-sm">
                         <InventoryTable
                             variants={filteredVariants}
                             onAdjust={(v) => setSelectedVariant(v)}
+                            onDelete={handleDeleteProduxt}
+
                         />
                         {filteredVariants.length === 0 && searchTerm !== "" && (
                             <div className="p-20 text-center">
@@ -140,7 +172,6 @@ export default function InventoryPage() {
                 </section>
             </main>
 
-            {/* MODALES */}
             <CreateProductModal
                 isOpen={isCreateModalOpen}
                 onClose={() => setIsCreateModalOpen(false)}

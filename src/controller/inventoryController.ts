@@ -1,4 +1,4 @@
-
+import { Request, Response } from 'express';
 import pool from '../config/db';
 
 export const registerStockMovement = async (req: any, res: any) => {
@@ -96,6 +96,7 @@ export const getAllInventory = async (req: any, res: any) => {
             FROM product_variants pv
                      JOIN products p ON pv.product_id = p.id
                      LEFT JOIN categories c ON p.category_id = c.id
+            WHERE p.is_active = true
             ORDER BY p.name ASC;
         `;
 
@@ -106,6 +107,43 @@ export const getAllInventory = async (req: any, res: any) => {
         res.status(500).json({
             error: "Error en la consulta SQL",
             detail: error.message
+        });
+    }
+};
+
+export const deleteProduct = async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    try {
+        const result = await pool.query(
+            'UPDATE products SET is_active = false WHERE id = $1',
+            [id]
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "No se encontró el producto en el catálogo."
+            });
+        }
+
+        return res.json({
+            success: true,
+            message: "Producto y todo su historial de stock eliminados con éxito."
+        });
+
+    } catch (error: any) {
+        if (error.code === '23503') {
+            return res.status(400).json({
+                success: false,
+                message: "No se puede eliminar: Este repuesto ya ha sido vendido. Para mantener la contabilidad, no se permite borrarlo físicamente."
+            });
+        }
+
+        console.error("ERROR CRÍTICO EN DELETE:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Error interno del servidor al procesar el borrado."
         });
     }
 };

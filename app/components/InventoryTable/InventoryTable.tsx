@@ -1,22 +1,25 @@
 'use client';
-import { Edit3, AlertTriangle } from 'lucide-react';
+import {Edit3, AlertTriangle, Trash2} from 'lucide-react';
 
 interface Variant {
     id: string;
+    variant_id: string;
     product_name: string;
     sku: string;
     stock: number;
     min_threshold: number;
     unit_cost: number;
-    category_name?: string; // Campo para la categoría
+    category_name?: string;
+    product_id?: string;
 }
 
 interface Props {
     variants: Variant[];
     onAdjust: (variant: Variant) => void;
+    onDelete?: (id: string | undefined, name: string) => void;
 }
 
-export const InventoryTable = ({ variants = [], onAdjust }: Props) => {
+export const InventoryTable = ({ variants = [], onAdjust, onDelete }: Props) => {
 
     if (!Array.isArray(variants) || variants.length === 0) {
         return (
@@ -27,7 +30,7 @@ export const InventoryTable = ({ variants = [], onAdjust }: Props) => {
     }
     return (
         <div className="bg-white border border-gray-100 rounded-sm overflow-hidden">
-            <div className="overflow-x-auto"> {/* Contenedor para evitar que se rompa en móvil */}
+            <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse min-w-[800px]">
                     <thead className="bg-gray-50 border-b border-gray-100">
                     <tr>
@@ -67,10 +70,21 @@ export const InventoryTable = ({ variants = [], onAdjust }: Props) => {
                                 <td className="px-6 py-4 text-right">
                                     <button
                                         onClick={() => onAdjust(v)}
-                                        className="inline-flex items-center gap-2 rounded-md text-[9px] uppercase tracking-widest font-bold border border-gray-200 px-4 py-2 hover:bg-black hover:text-white transition-all"
+                                        className="inline-flex items-center gap-2 rounded-md text-[9px] cursor-pointer uppercase tracking-widest font-bold border border-gray-200 px-4 py-2 hover:bg-black hover:text-white transition-all"
                                     >
                                         <Edit3 className="w-3 h-3" /> Ajustar Stock
                                     </button>
+
+
+                                    {onDelete && (
+                                        <button
+                                            onClick={() => onDelete(v.product_id, v.product_name)}
+                                            className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-sm cursor-pointer transition-all group-hover:opacity-100"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    )}
+
                                 </td>
                             </tr>
                         );

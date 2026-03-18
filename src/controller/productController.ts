@@ -7,6 +7,7 @@ export const createProduct = async (req: Request, res: Response) => {
         name,
         description,
         base_price,
+        cost_price,
         category_id,
         variant_name,
         initial_stock,
@@ -19,11 +20,11 @@ export const createProduct = async (req: Request, res: Response) => {
         await client.query('BEGIN');
 
         const productQuery = `
-            INSERT INTO products (sku, name, description, base_price, category_id)
-            VALUES ($1, $2, $3, $4, $5)
+            INSERT INTO products (sku, name, description, base_price, cost_price,  category_id)
+            VALUES ($1, $2, $3, $4, $5,$6)
             RETURNING id;
         `;
-        const productRes = await client.query(productQuery, [sku, name, description, base_price, category_id]);
+        const productRes = await client.query(productQuery, [sku, name, description, base_price, cost_price,  category_id]);
         const productId = productRes.rows[0].id;
 
         const variantQuery = `
@@ -39,7 +40,7 @@ export const createProduct = async (req: Request, res: Response) => {
             INSERT INTO inventory_logs (variant_id, type, quantity, cost_at_moment, reason)
             VALUES ($1, 'Entrada', $2, $3, $4);
         `;
-        await client.query(logQuery, [variantId, initial_stock, initial_cost, 'Carga inicial de inventario']);
+        await client.query(logQuery, [variantId, initial_stock, cost_price || initial_cost || 0, 'Carga inicial de inventario']);
 
         await client.query('COMMIT');
 
@@ -70,9 +71,14 @@ export const createProductBulk = async (req: Request, res: Response) => {
         await client.query('BEGIN');
         for(const item of items){
             const productRes = await client.query(
-                `INSERT INTO products (sku, name. description, base_price, category_id)
-                VALUES ($1, $2, $3, $4, $5) RETURNING id`,
-                [item.sku, item.name, item.description || '', item.base_price, item.category_id]
+                `INSERT INTO products (sku, name, description, base_price, cost_price, category_id)
+                VALUES ($1, $2, $3, $4, $5, $6 ) RETURNING id`,
+                [item.sku,
+                    item.name,
+                    item.description || '',
+                    item.base_price,
+                    item.cost_price || 0,
+                    item.category_id]
             );
             const productId = productRes.rows[0].id;
 
@@ -114,6 +120,7 @@ export const getAllProducts = async (_req: Request, res: Response) => {
             FROM products p
                      LEFT JOIN categories c ON p.category_id = c.id
                      LEFT JOIN product_variants pv ON p.id = pv.product_id
+            WHERE p.is_active = true
             GROUP BY p.id, c.name;
         `;
         const result = await pool.query(sql);
