@@ -10,7 +10,7 @@
     "build": "next build",
     "start": "next start",
 
-    "build:backend": "tsc -P tsconfig.node.json",
+    "build:backend": "tsc -p tsconfig.node.json",
     "start:backend": "node dist/server.js",
 
     "db:init": "ts-node src/db/init.ts",
