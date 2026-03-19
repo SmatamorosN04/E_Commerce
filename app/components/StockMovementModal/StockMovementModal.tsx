@@ -11,6 +11,7 @@ interface Props {
     onClose: () => void;
     onSuccess: () => void;
 }
+const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 export const StockMovementModal = ({ variantId, productId, sku, productName, isOpen, onClose, onSuccess }: Props) => {
     const [loading, setLoading] = useState(false);
@@ -50,14 +51,14 @@ export const StockMovementModal = ({ variantId, productId, sku, productName, isO
             variant_id: variantId,
             product_id: productId,
             quantity: isPriceUpdate ? 0 : Number(formData.quantity),
-            type: isPriceUpdate ? 'Ajuste' : 'Entrada', // Mapeo directo para DB
+            type: isPriceUpdate ? 'Ajuste' : 'Entrada',
             reason: formData.reason,
             unit_cost: Number(formData.unit_cost || 0),
             is_price_update: isPriceUpdate
         };
 
         try {
-            const response = await fetch('http://localhost:3001/api/inventory/movement', {
+            const response = await fetch(`${API_URL}/api/inventory/movement`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),

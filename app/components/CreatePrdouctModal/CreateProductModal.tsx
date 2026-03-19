@@ -8,6 +8,8 @@ interface Props {
     onSuccess: () => void;
 }
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL
+
 export const CreateProductModal = ({ isOpen, onClose, onSuccess }: Props) => {
     const [loading, setLoading] = useState(false);
     const [categories, setCategories] = useState<{id: number, name: string}[]>([]);
@@ -26,7 +28,7 @@ export const CreateProductModal = ({ isOpen, onClose, onSuccess }: Props) => {
     // Cargar categorías al abrir el modal
     useEffect(() => {
         if (isOpen) {
-            fetch('http://localhost:3001/api/categories') // Ajusta a tu ruta real
+            fetch(`${API_URL}/api/categories`) // Ajusta a tu ruta real
                 .then(res => res.json())
                 .then(data => setCategories(data))
                 .catch(err => console.error("Error cargando categorías:", err));
@@ -39,7 +41,7 @@ export const CreateProductModal = ({ isOpen, onClose, onSuccess }: Props) => {
         e.preventDefault();
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:3001/api/products/create', {
+            const response = await fetch(`${API_URL}/api/products/create`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)

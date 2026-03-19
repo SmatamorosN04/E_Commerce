@@ -14,6 +14,9 @@ import { ExportReportCard } from "@/app/components/ExportReportCard/ExportReport
 import { TopProductsTable } from "@/app/components/TopProductTable/TopProductTable";
 import Link from "next/dist/client/link";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL
+
+
 export default function DashboardPage() {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState<any>(null);
@@ -27,7 +30,7 @@ export default function DashboardPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await fetch('http://localhost:3001/api/dashboard/stats');
+                const res = await fetch(`${API_URL}/api/dashboard/stats`);
                 const result = await res.json();
                 console.dir(result);
                 setData(result);

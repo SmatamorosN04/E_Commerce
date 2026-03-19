@@ -10,7 +10,7 @@ interface TopProduct {
 
 export const TopProductsTable = ({ items }: { items: TopProduct[]}) => {
     return (
-        <div className="bg-white rounded-[2.5rem] p-8 border- border-gray-100 shadow-sm h-full">
+        <div className="bg-white rounded-4xl p-8 border- border-gray-100 shadow-sm h-full">
             <div className="flex justify-between  items-center mb-8 ">
                 <div>
                     <h3 className="text-xl font-black text-gray-900 tracking-tight">Top Productos</h3>

@@ -7,6 +7,9 @@ import {CreateProductModal} from "@/app/components/CreatePrdouctModal/CreateProd
 import Link from "next/dist/client/link";
 import {AdminSidebar} from "@/app/components/AdminSidebar/AdminSidebar";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL
+
+
 export default function InventoryPage() {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [variants, setVariants] = useState([]);
@@ -17,7 +20,7 @@ export default function InventoryPage() {
     const loadData = async () => {
         setLoading(true);
         try {
-            const res = await fetch('http://localhost:3001/api/inventory/variants');
+            const res = await fetch(`${API_URL}/api/inventory/variants`);
             const data = await res.json();
             setVariants(data);
         } catch (error) {
@@ -40,14 +43,12 @@ export default function InventoryPage() {
     }, [searchTerm, variants]);
 
     const handleDeleteProduxt = async (productId: string | undefined, name: string) => {
-        // 1. Validaciones de seguridad
         if (!productId || productId === "undefined") {
             console.error("Error: ID de producto no encontrado para:", name);
             alert("No se puede procesar la solicitud: ID inválido.");
             return;
         }
 
-        // 2. Confirmación con el usuario (Mensaje más acorde al Soft Delete)
         const confirmed = window.confirm(
             `¿ESTÁS SEGURO DE RETIRAR "${name.toUpperCase()}" DEL CATÁLOGO?\n\nEl producto ya no aparecerá en el inventario, pero se conservará el historial de ventas.`
         );
@@ -55,7 +56,7 @@ export default function InventoryPage() {
         if (confirmed) {
             try {
 
-                const res = await fetch(`http://localhost:3001/api/inventory/products/${productId}`, {
+                const res = await fetch(`${API_URL}/api/inventory/products/${productId}`, {
                     method: 'DELETE',
                 });
 
@@ -64,7 +65,6 @@ export default function InventoryPage() {
                 if (res.ok) {
                      loadData();
                 } else {
-                    // Si el backend devuelve un error (ej. 404 o 500)
                     alert(data.message || 'Hubo un problema al retirar el producto.');
                 }
             } catch (error) {
