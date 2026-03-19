@@ -155,3 +155,19 @@ export const getAllProducts = async (_req: Request, res: Response) => {
         res.status(500).json({error: 'Error al obtener productos'});
     }
 }
+
+export const getProductById = async (req: Request, res: Response) => {
+    const { id } = req.params; // Este es el UUID que viene del frontend
+    try {
+        const result = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "Producto no encontrado" });
+        }
+
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error("Error en getProductById:", error);
+        res.status(500).json({ error: "Error interno del servidor al buscar el producto" });
+    }
+};
