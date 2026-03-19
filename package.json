@@ -3,11 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "db:init": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "backend": "ts-node-dev -P tsconfig.node.json --respawn --transpile-only src/server.ts",
-    "dev": "next dev",
+    "dev:frontend": "next dev",
+    "dev:backend": "nodemon src/server.ts",
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+
     "build": "next build",
     "start": "next start",
+
+    "build:backend": "tsc -P tsconfig.node.json",
+    "start:backend": "node dist/server.js",
+
+    "db:init": "ts-node src/db/init.ts",
     "lint": "eslint"
   },
   "dependencies": {
