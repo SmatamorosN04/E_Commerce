@@ -1,3 +1,4 @@
+import Link from 'next/link';
 interface Variant {
     variant_id: string;
     name: string;
@@ -12,15 +13,15 @@ interface Product {
     category: string;
     variants: Variant[];
 }
-
 export default function ProductCard({ product, view = 'grid' }: { product: Product, view?: 'grid' | 'list' }) {
     const totalStock = product.variants.reduce((acc, curr) => acc + curr.stock, 0);
     const tempImageUrl = "/bg.jpg"; //
+    const productHref = `/product/${product.id}`;
 
     if (view === 'list') {
         return (
-            <div className="group cursor-pointer flex gap-4 w-full animate-in fade-in duration-500">
-                <div className="relative aspect-[3/4] w-32 md:w-48 bg-[#F3F4F6] overflow-hidden rounded-sm flex-shrink-0">
+            <Link href={productHref} className="group cursor-pointer flex gap-4 w-full animate-in fade-in duration-500">
+                <div className="relative aspect-3/4 w-32 md:w-48 bg-[#F3F4F6] overflow-hidden rounded-sm flex-shrink-0">
                     {totalStock === 0 && (
                         <div className="absolute top-0 left-0 z-10 bg-white/80 backdrop-blur-sm px-2 py-1 m-1.5 border border-gray-100">
                             <span className="text-[8px] uppercase tracking-widest font-medium text-red-500">Agotado</span>
@@ -45,12 +46,12 @@ export default function ProductCard({ product, view = 'grid' }: { product: Produ
                         Ver Detalles
                     </button>
                 </div>
-            </div>
+            </Link>
         );
     }
 
     return (
-        <div className="group cursor-pointer flex flex-col items-center w-full animate-in fade-in duration-500">
+        <Link href={productHref} className="group cursor-pointer flex flex-col items-center w-full animate-in fade-in duration-500">
             <div className="relative aspect-[3/4] w-full bg-[#F3F4F6] overflow-hidden mb-3 rounded-sm">
                 {totalStock === 0 && (
                     <div className="absolute top-0 right-0 z-10 bg-white/80 backdrop-blur-sm px-2 py-1 m-1.5 border border-gray-100">
@@ -71,6 +72,6 @@ export default function ProductCard({ product, view = 'grid' }: { product: Produ
                     ${parseFloat(product.base_price).toFixed(2)}
                 </span>
             </div>
-        </div>
+        </Link>
     );
 }
