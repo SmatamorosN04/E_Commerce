@@ -28,7 +28,7 @@ export const createProduct = async (req: Request, res: Response) => {
         if (checkSku.rowCount > 0) {
             const error = new Error(`El SKU "${sku}" ya existe en el sistema.`);
             (error as any).statusCode = 400;
-            throw error;
+
         }
 
         const productQuery = `
@@ -91,7 +91,7 @@ export const createProductBulk = async (req: Request, res: Response) => {
             // @ts-ignore
             if (checkSku.rowCount > 0) {
 
-                throw new Error(`El SKU "${item.sku}" ya está registrado. Carga cancelada para evitar duplicados.`);
+
             }
 
             const productRes = await client.query(
