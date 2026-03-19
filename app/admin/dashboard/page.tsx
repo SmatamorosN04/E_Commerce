@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from "react";
-import { AdminSidebar } from "@/app/components/AdminSidebar/AdminSidebar";
+import { AdminSidebar }  from '../../components/AdminSidebar/AdminSidebar';
 import {
     Loader2, Plus, Calendar, Package, ShoppingCart,
     TrendingUp, DollarSign, Download, Settings, Bell

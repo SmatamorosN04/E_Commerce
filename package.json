@@ -10,7 +10,7 @@
     "build": "next build",
     "start": "next start",
 
-    "build:backend": "tsc -p tsconfig.node.json",
+    "build:backend": "tsc src/server.ts --outDir dist --lib dom,esnext --module commonjs --target es6 --moduleResolution node --esModuleInterop true --skipLibCheck true --noEmit false",
     "start:backend": "node dist/server.js",
 
     "db:init": "ts-node src/db/init.ts",
