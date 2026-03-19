@@ -10,13 +10,15 @@ import ProductCard from "@/app/components/ProductCard/ProductCard";
 import {BrandLogos} from "@/app/components/BrandLogos/BrandLogos";
 import Link from "next/dist/client/link";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL
+
 export default function HomePage() {
   const categories = ['TODO', 'MOTOR', 'FRENOS', 'ELÉCTRICO', 'ACCESORIOS'];
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/products')
+    fetch(`${API_URL}/api/products`)
         .then((res) => res.json())
         .then((data) => {
           setProducts(data);

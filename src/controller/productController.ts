@@ -19,6 +19,18 @@ export const createProduct = async (req: Request, res: Response) => {
     try {
         await client.query('BEGIN');
 
+        const checkSku = await client.query(
+            'SELECT id FROM products WHERE sku = $1 AND is_active = true',
+            [sku]
+        );
+
+        // @ts-ignore
+        if (checkSku.rowCount > 0) {
+            const error = new Error(`El SKU "${sku}" ya existe en el sistema.`);
+            (error as any).statusCode = 400;
+
+        }
+
         const productQuery = `
             INSERT INTO products (sku, name, description, base_price, cost_price,  category_id)
             VALUES ($1, $2, $3, $4, $5,$6)
@@ -70,6 +82,18 @@ export const createProductBulk = async (req: Request, res: Response) => {
     try{
         await client.query('BEGIN');
         for(const item of items){
+
+            const checkSku = await client.query(
+                'SELECT id FROM products WHERE sku = $1 AND is_active = true',
+                [item.sku]
+            );
+
+            // @ts-ignore
+            if (checkSku.rowCount > 0) {
+
+
+            }
+
             const productRes = await client.query(
                 `INSERT INTO products (sku, name, description, base_price, cost_price, category_id)
                 VALUES ($1, $2, $3, $4, $5, $6 ) RETURNING id`,
@@ -104,6 +128,8 @@ export const createProductBulk = async (req: Request, res: Response) => {
     } finally {
         client.release();
 }};
+
+
 export const getAllProducts = async (_req: Request, res: Response) => {
     try {
         const sql = `

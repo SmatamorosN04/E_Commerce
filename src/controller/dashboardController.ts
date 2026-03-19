@@ -4,13 +4,17 @@ import pool from '../config/db';
 export const getDashboardStats = async (req: Request, res: Response) => {
     try {
        const inventoryRes = await pool.query(`
-            SELECT COALESCE(SUM(v.stock_actual * p.cost_price), 0) as total_value
-            FROM product_variants v
-                     JOIN products p ON v.product_id = p.id
-            WHERE p.is_active = true
+           SELECT COALESCE(SUM(
+                             v.stock_actual * CASE
+                                WHEN p.cost_price > 0 THEN p.cost_price
+                                 ELSE p.base_price
+                                       END
+                           ), 0) as total_value
+           FROM product_variants v
+                    JOIN products p ON v.product_id = p.id
+           WHERE p.is_active = true
         `);
 
-        // 2. Estadísticas Mensuales: Ganancia = (Precio Vendido - Precio de Costo)
         const monthlyStatsRes = await pool.query(`
             SELECT
                 COALESCE(SUM(oi.sold_price * oi.quantity), 0) as total_sales,
@@ -23,7 +27,6 @@ export const getDashboardStats = async (req: Request, res: Response) => {
               AND o.status = 'Completada'
         `);
 
-        // 3. Historial de 7 días: Corregimos los JOINs para calcular la utilidad diaria
         const historyRes = await pool.query(`
             SELECT
                 to_char(d.day, 'Dy') as day,
