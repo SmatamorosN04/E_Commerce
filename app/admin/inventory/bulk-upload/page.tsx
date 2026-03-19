@@ -11,8 +11,11 @@ interface BulkItem {
     base_price: string;
     initial_stock: string;
     initial_cost: string;
-    category_name: string; // Cambiado de ID a Nombre
+    category_name: string;
 }
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL
+
 
 export default function BulkUploadPage() {
     const router = useRouter();
@@ -24,7 +27,7 @@ export default function BulkUploadPage() {
 
     // Cargar categorías para hacer el match de nombres a IDs
     useEffect(() => {
-        fetch('http://localhost:3001/api/categories')
+        fetch(`${API_URL}/api/categories`)
             .then(res => res.json())
             .then(data => setCategories(data))
             .catch(err => console.error("Error cargando categorías", err));
@@ -65,7 +68,7 @@ export default function BulkUploadPage() {
         });
 
         try {
-            const res = await fetch('http://localhost:3001/api/products/bulk', {
+            const res = await fetch(`${API_URL}/api/products/bulk`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ items: formattedItems })

@@ -3,6 +3,9 @@ import { FileDown, Table as TableIcon, Loader2, ChevronsRight, FileText } from "
 import * as XLSX from 'xlsx';
 import { useState } from "react";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL
+
+
 export const ExportReportCard = ({ salesData }: { salesData: any[] }) => {
     const [exporting, setExporting] = useState<string | null>(null);
 
@@ -13,7 +16,7 @@ export const ExportReportCard = ({ salesData }: { salesData: any[] }) => {
             let data = salesData;
 
             if (!data || data.length === 0) {
-                const response = await fetch('http://localhost:3001/api/sales/report');
+                const response = await fetch(`${API_URL}/api/sales/report`);
                 const result = await response.json();
                 data = result.data || [];
             }

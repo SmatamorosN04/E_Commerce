@@ -21,8 +21,9 @@ export default function HomePage() {
     fetch(`${API_URL}/api/products`)
         .then((res) => res.json())
         .then((data) => {
-          setProducts(data);
-          setLoading(false)
+            const limitedData = data.slice(0, 8);
+            setProducts(limitedData);
+            setLoading(false);
         })
         .catch((err) => {
           console.error("Error cargando productos", err);

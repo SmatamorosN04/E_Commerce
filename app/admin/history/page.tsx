@@ -8,6 +8,8 @@ import {
     ArrowUpCircle, List, Loader2, Clock, AlertCircle, CheckCircle2
 } from "lucide-react";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL
+
 export default function HistoryPage() {
     const [activeTab, setActiveTab] = useState<'ventas' | 'compras' | 'logs'>('ventas');
     const [sales, setSales] = useState<any[]>([]);
@@ -17,10 +19,9 @@ export default function HistoryPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Hacemos ambos fetch al mismo tiempo para ahorrar tiempo
                 const [resSales, resLogs] = await Promise.all([
-                    fetch('http://localhost:3001/api/reports/sales'),
-                    fetch('http://localhost:3001/api/logs')
+                    fetch(`${API_URL}/api/reports/sales`),
+                    fetch(`${API_URL}/api/logs`)
                 ]);
 
                 const dataSales = await resSales.json();
@@ -37,12 +38,11 @@ export default function HistoryPage() {
         fetchData();
     }, []);
 
-    // --- CONFIGURACIÓN DE COLUMNAS PARA LOGS ---
-// Configuración de Columnas para los logs de INVENTARIO
+
     const logsColumns = [
         {
             header: 'Movimiento',
-            accessor: 'action', // El alias que pusimos en el SQL (type AS action)
+            accessor: 'action',
             render: (val: string) => {
                 const colors: { [key: string]: string } = {
                     'Entrada': 'bg-emerald-100 text-emerald-700',
@@ -84,7 +84,6 @@ export default function HistoryPage() {
             )
         }
     ];
-    // --- COLUMNAS PARA VENTAS (Igual que antes) ---
     const salesColumns = [
         { header: 'Factura', accessor: 'factura', render: (val: any) => <span className="font-bold text-gray-900">#{val?.substring(0, 8).toUpperCase()}</span> },
         { header: 'Fecha', accessor: 'fecha', render: (val: any) => <span>{new Date(val).toLocaleDateString()}</span> },

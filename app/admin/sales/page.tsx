@@ -4,6 +4,9 @@ import {useEffect, useState} from "react";
 import {AdminSidebar} from "@/app/components/AdminSidebar/AdminSidebar";
 import {AlertCircle, CheckCircle2, Loader2, Plus, Receipt, Search, ShoppingBag, Trash2} from "lucide-react";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL
+
+
 export default function SalesPage() {
     const [products, setProducts] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
@@ -20,7 +23,7 @@ export default function SalesPage() {
 
     const fetchProducts = async () => {
         try{
-            const res = await fetch('http://localhost:3001/api/products');
+            const res = await fetch(`${API_URL}/api/products`);
             const data = await res.json();
             console.log("¿Qué trae el primer producto?:", data[0]);
             setProducts(data);
@@ -85,7 +88,7 @@ export default function SalesPage() {
         };
 
         try {
-            const res = await fetch('http://localhost:3001/api/sales/create',{
+            const res = await fetch(`${API_URL}/api/sales/create`,{
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json'},
                 body: JSON.stringify(salePayload)

@@ -6,6 +6,8 @@ interface Category {
     id: string;
     name: string;
 }
+const API_URL = process.env.NEXT_PUBLIC_API_URL
+
 
 export const MenuDrawer = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
     const [activeTab, setActiveTab] = useState<'BAJAJ' | 'TVS' | 'TORITO'>('BAJAJ');
@@ -13,7 +15,7 @@ export const MenuDrawer = ({ isOpen, onClose }: { isOpen: boolean; onClose: () =
 
     useEffect(() => {
         if (isOpen) {
-            fetch('http://localhost:3001/api/categories')
+            fetch(`${API_URL}/api/categories`)
                 .then(res => res.json())
                 .then(data => setCategories(data))
                 .catch(err => console.error("Error cargando categorías:", err));

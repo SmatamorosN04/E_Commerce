@@ -6,7 +6,9 @@ import { Navbar } from "@/app/components/NavBar/NavBar";
 import { Footer } from "@/app/components/Footer/Footer";
 import { useSearchParams } from 'next/navigation';
 
-// 1. Creamos un subcomponente que contiene toda la lógica actual
+const API_URL = process.env.NEXT_PUBLIC_API_URL
+
+
 function ShopContent() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -16,7 +18,7 @@ function ShopContent() {
     const searchQuery = searchParams.get('q');
 
     useEffect(() => {
-        fetch('http://localhost:3001/api/products')
+        fetch(`${API_URL}/api/products`)
             .then((res) => res.json())
             .then((data) => {
                 setProducts(data);
