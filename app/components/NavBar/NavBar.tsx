@@ -1,64 +1,90 @@
-'use client'
+'use client';
 import { Menu, Search, ShoppingBag } from 'lucide-react';
-import { useState} from "react";
+import { useState, useEffect } from "react";
+import Link from 'next/link';
 import { MenuDrawer } from "../MenuDrawer/MenuDrawer";
 import { CartContent } from "../CartContent/CartContent";
 import { SearchDrawer } from "../SearchDrawer/SearchDrawer";
-import {useCart} from "@/app/context/CartContext";
-
-
+import { useCart } from "@/app/context/CartContext";
 
 export const Navbar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isCartOpen, setIsCartOpen] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isCartOpen, setIsCartOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
+
     const { cartCount } = useCart();
+
+    // Efecto para detectar el scroll y cambiar el estilo de la Navbar
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 20);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     return (
-       <>
-           <nav className="flex items-center justify-between px-6 py-4 bg-white sticky top-0 z-50">
-               <div className="flex-1">
-                   <Menu className="w-6 h-6 text-gray-700 cursor-pointer"
-                         onClick={() => setIsMenuOpen(true)}
-                   />
-               </div>
+        <>
+            <nav className={`flex items-center justify-between px-6 py-4 sticky top-0 z-50 transition-all duration-300 ${
+                scrolled
+                    ? 'bg-white/80 backdrop-blur-md border-b border-gray-100 py-3 shadow-sm'
+                    : 'bg-white py-5'
+            }`}>
+                {/* Menú Lateral */}
+                <div className="flex-1">
+                    <button
+                        onClick={() => setIsMenuOpen(true)}
+                        className="p-2 -ml-2 hover:bg-gray-50 rounded-full transition-colors group"
+                    >
+                        <Menu className="w-6 h-6 text-gray-800 group-hover:scale-90 transition-transform" />
+                    </button>
+                </div>
 
-               <div className="flex-1 text-center">
-                   <h1 className="text-2xl font-serif tracking-widest font-bold italic">
-                       Repuestos la Abuela
-                   </h1>
-               </div>
+                {/* Logo Principal con Link */}
+                <div className="flex-1 text-center">
+                    <Link href="/">
+                        <h1 className="text-xl md:text-2xl font-serif tracking-[0.2em] font-bold italic text-black cursor-pointer hover:opacity-70 transition-opacity">
+                            Repuestos la Abuela
+                        </h1>
+                    </Link>
+                </div>
 
-               <div className="flex-1 flex justify-end gap-4 text-gray-700">
-                   <Search
-                       onClick={() => setIsSearchOpen(true)}
-                       className="w-6 h-6 cursor-pointer hover:text-gray-400 transition-colors" />
+                {/* Iconos de Acción */}
+                <div className="flex-1 flex justify-end gap-2 md:gap-4 text-gray-800">
+                    <button
+                        onClick={() => setIsSearchOpen(true)}
+                        className="p-2 hover:bg-gray-50 rounded-full transition-colors"
+                    >
+                        <Search className="w-6 h-6 stroke-[1.5px]" />
+                    </button>
 
-                   <div className="relative cursor-pointer group" onClick={() => setIsCartOpen(true)}>
-                       <ShoppingBag className="w-6 h-6 group-hover:text-gray-400 transition-colors" />
-                       {cartCount > 0 && (
-                           <span className="absolute -top-1 -right-1 min-w-[14px] h-[14px] px-1 bg-[#DD8560] text-white text-[9px] rounded-full flex items-center justify-center font-bold animate-in zoom-in duration-300">
-                {cartCount}
-              </span>
-                       )}
+                    <button
+                        className="relative p-2 hover:bg-gray-50 rounded-full transition-colors group"
+                        onClick={() => setIsCartOpen(true)}
+                    >
+                        <ShoppingBag className="w-6 h-6 group-hover:scale-110 transition-transform stroke-[1.5px]" />
+                        {cartCount > 0 && (
+                            <span className="absolute top-1 right-1 min-w-[16px] h-[16px] px-1 bg-[#DD8560] text-white text-[9px] rounded-full flex items-center justify-center font-bold animate-in fade-in zoom-in duration-300">
+                                {cartCount}
+                            </span>
+                        )}
+                    </button>
+                </div>
+            </nav>
 
-                   </div>
-               </div>
-           </nav>
-           <MenuDrawer
-               isOpen={isMenuOpen}
-               onClose={() => setIsMenuOpen(false)}
-           />
-           <CartContent
-               isOpen={isCartOpen}
-               onClose={() => setIsCartOpen(false)}
-           />
-           <SearchDrawer
-           isOpen={isSearchOpen}
-           onClose={() => setIsSearchOpen(false)}
-           />
-
-       </>
-
-
+            <MenuDrawer
+                isOpen={isMenuOpen}
+                onClose={() => setIsMenuOpen(false)}
+            />
+            <CartContent
+                isOpen={isCartOpen}
+                onClose={() => setIsCartOpen(false)}
+            />
+            <SearchDrawer
+                isOpen={isSearchOpen}
+                onClose={() => setIsSearchOpen(false)}
+            />
+        </>
     );
 };
