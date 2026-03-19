@@ -4,6 +4,7 @@ import { useState} from "react";
 import { MenuDrawer } from "../MenuDrawer/MenuDrawer";
 import { CartContent } from "../CartContent/CartContent";
 import { SearchDrawer } from "../SearchDrawer/SearchDrawer";
+import {useCart} from "@/app/context/CartContext";
 
 
 
@@ -11,6 +12,7 @@ export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const { cartCount } = useCart();
     return (
        <>
            <nav className="flex items-center justify-between px-6 py-4 bg-white sticky top-0 z-50">
@@ -33,9 +35,12 @@ export const Navbar = () => {
 
                    <div className="relative cursor-pointer group" onClick={() => setIsCartOpen(true)}>
                        <ShoppingBag className="w-6 h-6 group-hover:text-gray-400 transition-colors" />
-                       <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-[#DD8560] text-white text-[9px] rounded-full flex items-center justify-center font-bold">
-                            0
-                        </span>
+                       {cartCount > 0 && (
+                           <span className="absolute -top-1 -right-1 min-w-[14px] h-[14px] px-1 bg-[#DD8560] text-white text-[9px] rounded-full flex items-center justify-center font-bold animate-in zoom-in duration-300">
+                {cartCount}
+              </span>
+                       )}
+
                    </div>
                </div>
            </nav>
