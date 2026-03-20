@@ -1,18 +1,17 @@
 'use client'
 import { useState, useEffect, use } from 'react';
-import { ShoppingCart, ChevronRight, ShieldCheck, Truck, Loader2, Minus, Plus } from 'lucide-react';
+import { ShoppingCart, ChevronRight, ShieldCheck, Truck, Minus, Plus } from 'lucide-react';
 import { Navbar } from "@/app/components/NavBar/NavBar";
 import { Footer } from "@/app/components/Footer/Footer";
 import Image from 'next/image';
-import Link from "next/dist/client/link";
-// 1. IMPORTA EL HOOK
+import Link from "next/link";
 import { useCart } from "@/app/context/CartContext";
+import toast from "react-hot-toast";
 
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const resolvedParams = use(params);
     const productId = resolvedParams.id;
 
-    // 2. EXTRAE LA FUNCIÓN ADDTOCART
     const { addToCart } = useCart();
 
     const [product, setProduct] = useState<any>(null);
@@ -36,21 +35,29 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         fetchProduct();
     }, [productId]);
 
-    // 3. FUNCIÓN PARA MANEJAR EL CLICK
     const handleAddToCart = () => {
         if (!product) return;
+        const inventarioReal = Number(product.stock_actual);
+        console.log(product.stock_actual);
+
+
+        if (inventarioReal <= 0) {
+            toast.error('LO SENTIMOS, ESTE REPUESTO ESTÁ AGOTADO', {
+                style: { border: '1px solid #000', borderRadius: '0px', fontSize: '10px', letterSpacing: '0.2em' }
+            });
+            return;
+        }
 
         addToCart({
             id: product.id,
             name: product.name,
-            base_price: parseFloat(product.base_price), // Convertimos a número por seguridad
+            base_price: parseFloat(product.base_price),
+            stock: inventarioReal,
             quantity: quantity,
             image_url: product.image_url || "/bg.jpg",
-            brand: "Genuino" // Opcional, según tu diseño
+            brand: product.brand || "Genuino"
         });
 
-        // Opcional: Podrías abrir el carrito automáticamente aquí si quisieras
-        console.log("Producto agregado con éxito");
     };
 
     if (loading) return (
@@ -70,7 +77,6 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             <Navbar />
 
             <div className="max-w-7xl mx-auto px-6 py-12 animate-fade-in">
-                {/* Breadcrumbs */}
                 <nav className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-gray-400 mb-10">
                     <Link href={'/shop'} className="cursor-pointer hover:text-black transition-colors">Catálogo</Link>
                     <ChevronRight className="w-3 h-3" />
@@ -109,19 +115,28 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
                                         className="p-3 hover:bg-gray-50 cursor-pointer transition-colors"
                                     >
-                                        <Minus className="w-3 h-3 " />
+                                        <Minus className="w-3 h-3" />
                                     </button>
                                     <span className="w-8 text-center text-sm">{quantity}</span>
                                     <button
-                                        onClick={() => setQuantity(quantity + 1)}
+                                        onClick={() => {
+                                            if (quantity < product.stock_actual) {
+                                            setQuantity(prev => prev + 1);
+                                        } else {
+                                            toast.error(`Solo hay ${product.stock_actual} unidades en inventario`, {
+                                            duration: 2000,
+                                            style: { fontSize: '10px', borderRadius: '0px' }
+                                        });
+                                        }
+                                        }}
+
                                         className="p-3 hover:bg-gray-50 cursor-pointer transition-colors"
                                     >
-                                        <Plus className="w-3  h-3" />
+                                        <Plus className="w-3 h-3" />
                                     </button>
                                 </div>
                             </div>
 
-                            {/* 4. CONECTA LA FUNCIÓN AL BOTÓN */}
                             <button
                                 onClick={handleAddToCart}
                                 className="w-full bg-black cursor-pointer text-white py-5 flex items-center justify-center gap-3 uppercase text-[10px] tracking-[0.3em] hover:bg-[#222] transition-all mt-4 group"

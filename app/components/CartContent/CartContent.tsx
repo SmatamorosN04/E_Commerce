@@ -1,9 +1,13 @@
 'use client';
 import { X, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
 import { useCart} from "@/app/context/CartContext";
+import {useState} from "react";
+import {CheckoutModal} from "@/app/components/CheckoutModal/CheckoutModal";
 
 export const CartContent = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
-    const { cart, addToCart, removeFromCart, totalPrice, clearCart } = useCart();
+    const { cart, addToCart, removeFromCart, totalPrice, updateQuantity } = useCart();
+    const [isModalOpen, setIsModalOpen] = useState(false)
+
 
     return (
         <>
@@ -28,7 +32,6 @@ export const CartContent = ({ isOpen, onClose }: { isOpen: boolean; onClose: () 
                     <div className="w-6" />
                 </div>
 
-                {/* Lista Dinámica de Productos */}
                 <div className="grow overflow-y-auto pr-2 no-scrollbar space-y-8">
                     {cart.length > 0 ? (
                         cart.map((item) => (
@@ -47,7 +50,8 @@ export const CartContent = ({ isOpen, onClose }: { isOpen: boolean; onClose: () 
                                         </h3>
                                         <button
                                             onClick={() => removeFromCart(item.id)}
-                                            className="absolute top-0 right-0 text-gray-300 hover:text-red-400 transition-colors"
+                                            className="absolute -top-2 -right-2 p-4 z-10 text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-red-50"
+                                            aria-label="Eliminar producto"
                                         >
                                             <Trash2 className="w-3.5 h-3.5" />
                                         </button>
@@ -55,10 +59,18 @@ export const CartContent = ({ isOpen, onClose }: { isOpen: boolean; onClose: () 
 
                                     <div className="flex justify-between items-center mt-auto">
                                         <div className="flex items-center gap-4 border border-gray-100 px-2 py-1">
-                                            <button className="text-gray-400 hover:text-gray-900"><Minus className="w-3 h-3" /></button>
-                                            <span className="text-[11px] font-light w-4 text-center">{item.quantity}</span>
                                             <button
-                                                onClick={() => addToCart({...item, quantity: 1})}
+                                                onClick={() => updateQuantity(item.id, -1, item.stock)}
+                                                disabled={item.quantity >= item.stock}
+                                                className="text-gray-400 hover:text-gray-900"
+                                            >
+                                                <Minus className="w-3 h-3" />
+                                            </button>
+
+                                            <span className="text-[11px] font-light w-4 text-center">{item.quantity}</span>
+
+                                            <button
+                                                onClick={() => addToCart({...item, stock: item.quantity ,quantity: 1})}
                                                 className="text-gray-400 hover:text-gray-900"
                                             >
                                                 <Plus className="w-3 h-3" />
@@ -72,7 +84,8 @@ export const CartContent = ({ isOpen, onClose }: { isOpen: boolean; onClose: () 
                             </div>
                         ))
                     ) : (
-                        <div className="h-full flex flex-col items-center justify-center opacity-40">
+                        <div
+                            className="h-full flex flex-col items-center justify-center opacity-40">
                             <ShoppingBag className="w-12 h-12 stroke-[0.5px] mb-4" />
                             <p className="text-[10px] uppercase tracking-widest">El carrito está vacío</p>
                         </div>
@@ -86,7 +99,11 @@ export const CartContent = ({ isOpen, onClose }: { isOpen: boolean; onClose: () 
                             <span className="text-black font-bold text-sm">${totalPrice.toFixed(2)}</span>
                         </div>
 
-                        <button className="w-full h-14 bg-black text-white flex items-center justify-center gap-3 hover:bg-[#1a1a1a] transition-all uppercase tracking-[0.3em] text-[9px] font-medium group">
+                        <button
+                            onClick={() =>{
+                                onClose()
+                                setIsModalOpen(true)}}
+                            className="w-full h-14 cursor-pointer bg-black text-white flex items-center justify-center gap-3 hover:bg-[#1a1a1a] transition-all uppercase tracking-[0.3em] text-[9px] font-medium group">
                             <ShoppingBag className="w-4 h-4 stroke-[1.5px] group-hover:scale-110 transition-transform" />
                             Finalizar Compra
                         </button>
@@ -97,6 +114,12 @@ export const CartContent = ({ isOpen, onClose }: { isOpen: boolean; onClose: () 
                     </div>
                 )}
             </div>
+            <CheckoutModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            cart={cart}
+            total={totalPrice}
+            ></CheckoutModal>
         </>
     );
 };

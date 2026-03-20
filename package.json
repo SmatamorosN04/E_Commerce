@@ -6,25 +6,26 @@
     "dev:frontend": "next dev",
     "dev:backend": "nodemon src/server.ts",
     "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
-
     "build": "next build",
     "start": "next start",
-
     "build:backend": "tsc src/server.ts --outDir dist --lib dom,esnext --module commonjs --target es6 --moduleResolution node --esModuleInterop true --skipLibCheck true --noEmit false",
     "start:backend": "node dist/server.js",
-
     "db:init": "ts-node src/db/init.ts",
     "lint": "eslint"
   },
   "dependencies": {
+    "@types/leaflet": "^1.9.21",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
+    "leaflet": "^1.9.4",
     "lucide-react": "^0.577.0",
     "next": "16.1.6",
     "pg": "^8.20.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-hot-toast": "^2.6.0",
+    "react-leaflet": "^5.0.0",
     "recharts": "^3.8.0",
     "xlsx": "^0.18.5"
   },

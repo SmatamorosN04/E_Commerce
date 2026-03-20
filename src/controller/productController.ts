@@ -159,8 +159,18 @@ export const getAllProducts = async (_req: Request, res: Response) => {
 export const getProductById = async (req: Request, res: Response) => {
     const { id } = req.params; // Este es el UUID que viene del frontend
     try {
-        const result = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
+        const query = `
+    SELECT 
+        p.*, 
+        v.stock_actual,
+        v.variant_name
+    FROM products p
+    LEFT JOIN product_variants v ON p.id = v.product_id
+    WHERE p.id = $1
+    LIMIT 1;
+`;
 
+        const result = await pool.query(query, [id]);
         if (result.rows.length === 0) {
             return res.status(404).json({ message: "Producto no encontrado" });
         }
