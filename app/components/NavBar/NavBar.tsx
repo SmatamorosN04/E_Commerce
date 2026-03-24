@@ -3,9 +3,14 @@ import { Menu, Search, ShoppingBag } from 'lucide-react';
 import { useState, useEffect } from "react";
 import Link from 'next/link';
 import { MenuDrawer } from "../MenuDrawer/MenuDrawer";
-import { CartContent } from "../CartContent/CartContent";
 import { SearchDrawer } from "../SearchDrawer/SearchDrawer";
 import { useCart } from "@/app/context/CartContext";
+import dynamic from "next/dist/shared/lib/dynamic";
+
+const CartContent = dynamic(
+    () => import("../CartContent/CartContent").then((mod) => mod.CartContent),
+    { ssr: false }
+);
 
 export const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,7 +20,6 @@ export const Navbar = () => {
 
     const { cartCount } = useCart();
 
-    // Efecto para detectar el scroll y cambiar el estilo de la Navbar
     useEffect(() => {
         const handleScroll = () => {
             setScrolled(window.scrollY > 20);
@@ -31,7 +35,6 @@ export const Navbar = () => {
                     ? 'bg-white/80 backdrop-blur-md border-b border-gray-100 py-3 shadow-sm'
                     : 'bg-white py-5'
             }`}>
-                {/* Menú Lateral */}
                 <div className="flex-1">
                     <button
                         onClick={() => setIsMenuOpen(true)}
