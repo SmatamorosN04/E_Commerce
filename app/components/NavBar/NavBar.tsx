@@ -5,11 +5,15 @@ import Link from 'next/link';
 import { MenuDrawer } from "../MenuDrawer/MenuDrawer";
 import { SearchDrawer } from "../SearchDrawer/SearchDrawer";
 import { useCart } from "@/app/context/CartContext";
-import dynamic from "next/dist/shared/lib/dynamic";
+import dynamic from "next/dynamic";
+
 
 const CartContent = dynamic(
     () => import("../CartContent/CartContent").then((mod) => mod.CartContent),
-    { ssr: false }
+    {
+        ssr: false,
+        loading: () => null
+    }
 );
 
 export const Navbar = () => {
